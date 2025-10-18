@@ -18,7 +18,7 @@ public class Biblioteca {
 
     void registrarUsuario(Usuario usuario) {
         usuarios.add(usuario);
-        system.out.println("Usuario registrado: " + usuario);
+        System.out.println("Usuario registrado: " + usuario);
     }
 
     void prestarLibro(Libro libro, Usuario usuario) {
