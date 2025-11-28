@@ -21,6 +21,7 @@ public class AgroSenseGUI extends JFrame {
     
     // Componentes principales
     private JTabbedPane tabbedPane;
+    private JPanel panelDashboard;
     private JPanel panelLotes;
     private JPanel panelAlertas;
     private JPanel panelRecomendaciones;
@@ -43,6 +44,10 @@ public class AgroSenseGUI extends JFrame {
         
         // Crear pestañas
         tabbedPane = new JTabbedPane();
+        
+        // Panel de Dashboard
+        panelDashboard = crearPanelDashboard();
+        tabbedPane.addTab("🏠 Panel de Control", panelDashboard);
         
         // Panel de Lotes
         panelLotes = crearPanelLotes();
@@ -83,6 +88,144 @@ public class AgroSenseGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 actualizarMonitoreo();
+            }
+        });
+    }
+    
+    private JPanel crearPanelDashboard() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JPanel gridPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+
+        // 1. Panel de Estado del Sistema
+        JPanel estadoPanel = new JPanel(new BorderLayout());
+        estadoPanel.setBorder(new TitledBorder("Estado del Sistema"));
+        JTextArea estadoArea = new JTextArea();
+        estadoArea.setName("estadoArea");
+        estadoArea.setEditable(false);
+        estadoArea.setFont(new Font("Arial", Font.BOLD, 16));
+        estadoPanel.add(new JScrollPane(estadoArea), BorderLayout.CENTER);
+
+        // 2. Panel de Resumen de Lotes
+        JPanel resumenLotesPanel = new JPanel(new BorderLayout());
+        resumenLotesPanel.setBorder(new TitledBorder("Resumen de Lotes"));
+        JTextArea resumenLotesArea = new JTextArea();
+        resumenLotesArea.setName("resumenLotesArea");
+        resumenLotesArea.setEditable(false);
+        resumenLotesPanel.add(new JScrollPane(resumenLotesArea), BorderLayout.CENTER);
+
+        // 3. Panel de Alertas Críticas
+        JPanel alertasCriticasPanel = new JPanel(new BorderLayout());
+        alertasCriticasPanel.setBorder(new TitledBorder("Alertas Críticas"));
+        JTextArea alertasCriticasArea = new JTextArea();
+        alertasCriticasArea.setName("alertasCriticasArea");
+        alertasCriticasArea.setEditable(false);
+        alertasCriticasPanel.add(new JScrollPane(alertasCriticasArea), BorderLayout.CENTER);
+
+        // 4. Panel de Recomendaciones Prioritarias
+        JPanel recomendacionesPrioPanel = new JPanel(new BorderLayout());
+        recomendacionesPrioPanel.setBorder(new TitledBorder("Recomendaciones Prioritarias"));
+        JTextArea recomendacionesPrioArea = new JTextArea();
+        recomendacionesPrioArea.setName("recomendacionesPrioArea");
+        recomendacionesPrioArea.setEditable(false);
+        recomendacionesPrioPanel.add(new JScrollPane(recomendacionesPrioArea), BorderLayout.CENTER);
+
+        gridPanel.add(estadoPanel);
+        gridPanel.add(resumenLotesPanel);
+        gridPanel.add(alertasCriticasPanel);
+        gridPanel.add(recomendacionesPrioPanel);
+
+        panel.add(gridPanel, BorderLayout.CENTER);
+
+        JButton btnActualizarDashboard = new JButton("🔄 Actualizar Panel de Control");
+        btnActualizarDashboard.addActionListener(e -> actualizarDashboard());
+        panel.add(btnActualizarDashboard, BorderLayout.SOUTH);
+
+        return panel;
+    }
+
+    private void actualizarDashboard() {
+        List<LoteSimple> lotes = sistemaMonitoreo.obtenerTodosLotes();
+        long lotesCriticos = sistemaMonitoreo.obtenerLotesPorEstado("CRITICO").size();
+        long lotesAtencion = sistemaMonitoreo.obtenerLotesPorEstado("ATENCION").size();
+        long lotesOptimos = lotes.size() - lotesCriticos - lotesAtencion;
+
+        // Actualizar Estado del Sistema
+        JTextArea estadoArea = (JTextArea) findComponentByName(panelDashboard, "estadoArea");
+        if (lotesCriticos > 0) {
+            estadoArea.setText("🔴 ESTADO CRÍTICO\nRequiere atención inmediata.");
+            estadoArea.setForeground(Color.RED);
+        } else if (lotesAtencion > 0) {
+            estadoArea.setText("🟠 ESTADO DE ATENCIÓN\nAlgunos lotes requieren monitoreo.");
+            estadoArea.setForeground(Color.ORANGE);
+        } else {
+            estadoArea.setText("✅ SISTEMA ÓPTIMO\nTodos los lotes operan normalmente.");
+            estadoArea.setForeground(new Color(0, 128, 0));
+        }
+
+        // Actualizar Resumen de Lotes
+        JTextArea resumenLotesArea = (JTextArea) findComponentByName(panelDashboard, "resumenLotesArea");
+        resumenLotesArea.setText("");
+        resumenLotesArea.append("Total de Lotes: " + lotes.size() + "\n\n");
+        resumenLotesArea.append("✅ Óptimos: " + lotesOptimos + "\n");
+        resumenLotesArea.append("⚠️ Atención: " + lotesAtencion + "\n");
+        resumenLotesArea.append("🚨 Críticos: " + lotesCriticos + "\n");
+
+        // Actualizar Alertas Críticas
+        JTextArea alertasCriticasArea = (JTextArea) findComponentByName(panelDashboard, "alertasCriticasArea");
+        alertasCriticasArea.setText("");
+        boolean hayAlertasCriticas = false;
+        for (LoteSimple lote : lotes) {
+            if ("CRITICO".equals(lote.getEstadoGeneral())) {
+                for (String alerta : lote.getAlertas()) {
+                    alertasCriticasArea.append("• " + lote.getNombre() + ": " + alerta + "\n");
+                    hayAlertasCriticas = true;
+                }
+            }
+        }
+        if (!hayAlertasCriticas) {
+            alertasCriticasArea.setText("No hay alertas críticas activas.");
+        }
+
+        // Actualizar Recomendaciones Prioritarias
+        JTextArea recomendacionesPrioArea = (JTextArea) findComponentByName(panelDashboard, "recomendacionesPrioArea");
+        recomendacionesPrioArea.setText("");
+        boolean hayRecomendacionesCriticas = false;
+        for (LoteSimple lote : lotes) {
+            List<RecomendacionSimple> recomendaciones = motorRecomendaciones.generarRecomendacionesLote(lote);
+            for (RecomendacionSimple rec : recomendaciones) {
+                if (rec.getPrioridad() == 1) { // Prioridad CRITICA
+                    recomendacionesPrioArea.append("• " + lote.getNombre() + ": " + rec.getTitulo() + "\n");
+                    hayRecomendacionesCriticas = true;
+                }
+            }
+        }
+        if (!hayRecomendacionesCriticas) {
+            recomendacionesPrioArea.setText("No hay recomendaciones prioritarias.");
+        }
+    }
+
+    /**
+     * Busca un componente por su nombre dentro de un contenedor.
+     */
+    private Component findComponentByName(Container container, String name) {
+        for (Component component : container.getComponents()) {
+            if (name.equals(component.getName())) {
+                return component;
+            }
+            if (component instanceof JScrollPane) { // Buscar dentro de JScrollPane
+                JScrollPane scrollPane = (JScrollPane) component;
+                Component view = scrollPane.getViewport().getView();
+                if (name.equals(view.getName())) {
+                    return view;
+                }
+            }
+            if (component instanceof Container) {
+                Component found = findComponentByName((Container) component, name);
+                if (found != null) {
+                    return found;
+                }
             }
         });
     }
@@ -262,6 +405,7 @@ public class AgroSenseGUI extends JFrame {
         
         log("✅ Se han inicializado " + sistemaMonitoreo.getCantidadLotes() + " lotes de ejemplo.");
         actualizarLotes();
+        actualizarDashboard();
     }
     
     private void actualizarLotes() {
@@ -281,6 +425,7 @@ public class AgroSenseGUI extends JFrame {
         panelLotesLista.repaint();
         
         log("🔄 Lotes actualizados: " + lotes.size() + " lotes");
+        actualizarDashboard();
     }
     
     private JPanel crearPanelLote(LoteSimple lote) {
@@ -453,12 +598,14 @@ public class AgroSenseGUI extends JFrame {
             lote.realizarLectura();
         }
         actualizarLotes();
+        actualizarDashboard();
         log("📊 Lectura manual completada para todos los lotes");
     }
     
     private void realizarLecturaCompleta() {
         sistemaMonitoreo.realizarMonitoreoCompleto();
         actualizarLotes();
+        actualizarDashboard();
         log("📊 Lectura completa del sistema realizada");
     }
     
