@@ -1,4 +1,4 @@
-package limoncito.domain;
+package domain;
 
 public record Cliente(String nombre, String telefono) {
     public Cliente {

@@ -1,25 +1,27 @@
-package limoncito.app;
+package app;
 
-import limoncito.domain.Cliente;
-import limoncito.domain.Producto;
-import limoncito.service.Limoncito;
+import domain.Cliente;
+import domain.Producto;
+import service.Limoncito;
 
-public class Main {
+public class app {
     public static void main(String[] args) {
+        
         var service = new Limoncito();
         var cliente = new Cliente("Ana", "3001234567");
         var pedido = service.crearPedido(cliente);
         
-        service.agregarItem(pedido, Producto.CAMISA, 6);
+        service.agregarItem(pedido, Producto.CAMISA, 0);
         service.agregarItem(pedido, Producto.PANTALON, 2);
         
-        System.out.println(service.resumen(pedido));
-        
         // Servicio Expres
-        pedido.setServicioExpres(true);
+        pedido.setServicioExpres(false);
+        
+        System.out.println(service.resumen(pedido));
         
         // CONFIRMAR
         service.confirmar(pedido);
         System.out.println("Pedido confirmado: " + pedido.getEstado());
+
     }
 }

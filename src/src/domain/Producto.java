@@ -1,4 +1,4 @@
-package limoncito.domain;
+package domain;
 
 public enum Producto {
     CAMISA(4000, 3500),
