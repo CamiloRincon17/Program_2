@@ -1,0 +1,54 @@
+LOTE {
+  ID: L001
+  NOMBRE: "Sector Norte"
+  CULTIVO: "MaÃ­z"
+  AREA: 15.5
+}
+LOTE {
+  ID: L002
+  NOMBRE: "Sector Sur"
+  CULTIVO: "Tomate"
+  AREA: 8.3
+}
+LOTE {
+  ID: L003
+  NOMBRE: "Invernadero Principal"
+  CULTIVO: "Lechuga"
+  AREA: 4.2
+}
+LOTE {
+  ID: L004
+  NOMBRE: "Campo Este"
+  CULTIVO: "Zanahorias"
+  AREA: 12.0
+}
+ALERTA {
+  NIVEL: CRITICAL
+  MENSAJE: "Humedad crÃ­tica baja (25.34%)"
+  FECHA: 2025-11-28T20:30:15
+  LOTE: L001
+}
+ALERTA {
+  NIVEL: WARNING
+  MENSAJE: "Humedad baja (42.18%)"
+  FECHA: 2025-11-28T20:31:22
+  LOTE: L002
+}
+ALERTA {
+  NIVEL: CRITICAL
+  MENSAJE: "Temperatura crÃ­tica alta (36.72Â°C)"
+  FECHA: 2025-11-28T20:32:45
+  LOTE: L003
+}
+ALERTA {
+  NIVEL: WARNING
+  MENSAJE: "Humedad baja (48.95%)"
+  FECHA: 2025-11-28T20:33:10
+  LOTE: L004
+}
+ALERTA {
+  NIVEL: WARNING
+  MENSAJE: "Temperatura alta (31.25Â°C)"
+  FECHA: 2025-11-28T20:34:05
+  LOTE: L002
+}

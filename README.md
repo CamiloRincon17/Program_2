@@ -1,19 +1,94 @@
-## Getting Started
+# AgroSense - Sistema de Monitoreo Agrícola 🌿
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+Sistema inteligente de monitoreo agrícola con interfaz gráfica moderna en **JavaFX** y persistencia de datos en JSON.
 
-## Folder Structure
+## Características
 
-The workspace contains two folders by default, where:
+- 🌱 **Gestión de Lotes**: Registro y administración de lotes de cultivo
+- 📡 **Sensores IoT**: Monitoreo de humedad y temperatura en tiempo real
+- 📊 **Visualización**: Interfaz gráfica moderna con datos actualizados
+- ⚠️ **Alertas Inteligentes**: Detección automática de condiciones críticas
+- 💡 **Recomendaciones**: Consejos basados en datos para optimizar cultivos
+- 💾 **Persistencia JSON**: Exportar/importar datos para mantener historial
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## Requisitos
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+- Java 17 o superior
+- Maven 3.6+
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+## Instalación y Ejecución
 
-## Dependency Management
+### 1. Compilar el proyecto
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
-# Program_2
+```powershell
+mvn clean compile
+```
+
+### 2. Ejecutar la aplicación (JavaFX)
+
+**Opción A - Usando Maven (Recomendado):**
+```powershell
+mvn javafx:run
+```
+o
+```powershell
+mvn exec:java
+```
+
+**Opción B - JAR ejecutable:**
+```powershell
+# Compilar JAR
+mvn clean package
+
+# Ejecutar
+java -jar target/agrosense-console-1.0-SNAPSHOT.jar
+```
+
+## Uso de la Aplicación
+
+### Interfaz Gráfica (JavaFX)
+
+1. **Gestión de Lotes** (🌱)
+   - Registre lotes con ID, nombre, tipo de cultivo y área
+   - Vea todos los lotes registrados en la tabla
+
+2. **Sensores** (📡)
+   - Agregue sensores de HUMEDAD o TEMPERATURA a cada lote
+   - Especifique la ubicación del sensor
+
+3. **Monitoreo** (📊)
+   - Haga clic en "Simular Lectura de Sensores"
+   - Observe los valores y el estado de cada sensor
+
+4. **Alertas** (⚠️)
+   - Vea el historial de alertas generadas
+   - Lea las recomendaciones inteligentes
+
+### Persistencia de Datos
+
+- **💾 Exportar Datos**: Guarda todos los lotes, sensores y alertas en `data/agrosense_data.json`
+- **📂 Importar Datos**: Carga datos previamente guardados
+- **Auto-Carga**: Los datos se cargan automáticamente al iniciar la aplicación si existen.
+
+## Estructura del Proyecto
+
+```
+src/main/java/com/agrosense/
+├── model/              # Entidades del dominio
+├── service/            # Lógica de negocio
+└── ui/                 # Interfaces de usuario
+    ├── AgroSenseFX.java     # Interfaz gráfica JavaFX (Principal)
+    ├── AgroSenseGUI.java    # Interfaz gráfica Swing (Legacy)
+    └── ConsoleUI.java       # Interfaz de consola
+```
+
+## Tecnologías
+
+- **Java 17**: Lenguaje de programación
+- **JavaFX**: Interfaz gráfica moderna
+- **GSON**: Serialización/deserialización JSON
+- **Maven**: Gestión de dependencias y construcción
+
+## Autor
+
+AgroSense - Sistema de Monitoreo Agrícola Inteligente
