@@ -26,7 +26,6 @@ public class AgroSenseFX extends Application {
     private SensorService sensorService = new SensorService();
     private AlertaService alertaService = new AlertaService();
     private RecomendacionService recomendacionService = new RecomendacionService();
-    private DataPersistenceService persistenceService = new DataPersistenceService();
     private ToonPersistenceService toonService = new ToonPersistenceService();
 
     // UI Components
@@ -453,8 +452,8 @@ public class AgroSenseFX extends Application {
 
     private void exportarDatos() {
         try {
-            persistenceService.exportarDatos(gestorLotes, alertaService);
-            showAlert("Éxito", "Datos exportados correctamente", Alert.AlertType.INFORMATION);
+            toonService.exportarDatos(gestorLotes, alertaService);
+            showAlert("Éxito", "Datos exportados correctamente en formato TOON", Alert.AlertType.INFORMATION);
         } catch (Exception e) {
             showAlert("Error", "Error al exportar: " + e.getMessage(), Alert.AlertType.ERROR);
         }
@@ -462,7 +461,7 @@ public class AgroSenseFX extends Application {
 
     private void importarDatos() {
         try {
-            var data = persistenceService.importarDatos();
+            var data = toonService.importarDatos();
             gestorLotes.obtenerTodos().clear();
             alertaService.getHistorialAlertas().clear();
 
@@ -474,7 +473,7 @@ public class AgroSenseFX extends Application {
             actualizarTablaLotes();
             actualizarCombos();
             actualizarAlertas();
-            showAlert("Éxito", "Datos importados correctamente", Alert.AlertType.INFORMATION);
+            showAlert("Éxito", "Datos importados correctamente desde TOON", Alert.AlertType.INFORMATION);
         } catch (Exception e) {
             showAlert("Error", "Error al importar: " + e.getMessage(), Alert.AlertType.ERROR);
         }

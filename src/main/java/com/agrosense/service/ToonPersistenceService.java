@@ -3,6 +3,7 @@ package com.agrosense.service;
 import com.agrosense.model.*;
 import java.io.*;
 import java.nio.file.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.*;
@@ -22,6 +23,17 @@ public class ToonPersistenceService {
             sb.append("  NOMBRE: \"").append(lote.getNombre()).append("\"\n");
             sb.append("  CULTIVO: \"").append(lote.getTipoCultivo()).append("\"\n");
             sb.append("  AREA: ").append(lote.getArea()).append("\n");
+
+            // Nuevos campos agrícolas
+            if (lote.getFechaSiembra() != null) {
+                sb.append("  FECHA_SIEMBRA: ").append(lote.getFechaSiembra()).append("\n");
+            }
+            if (lote.getEtapaCrecimiento() != null) {
+                sb.append("  ETAPA: \"").append(lote.getEtapaCrecimiento()).append("\"\n");
+            }
+            if (lote.getNotas() != null && !lote.getNotas().isEmpty()) {
+                sb.append("  NOTAS: \"").append(lote.getNotas()).append("\"\n");
+            }
 
             if (!lote.getSensores().isEmpty()) {
                 sb.append("  SENSORES {\n");
@@ -51,13 +63,13 @@ public class ToonPersistenceService {
         Files.writeString(Paths.get(DATA_FILE), sb.toString());
     }
 
-    public DataPersistenceService.AgroSenseData importarDatos() throws IOException {
+    public AgroSenseData importarDatos() throws IOException {
         if (!Files.exists(Paths.get(DATA_FILE))) {
             throw new FileNotFoundException("No se encontró el archivo TOON");
         }
 
         String content = Files.readString(Paths.get(DATA_FILE));
-        DataPersistenceService.AgroSenseData data = new DataPersistenceService.AgroSenseData();
+        AgroSenseData data = new AgroSenseData();
         data.lotes = new ArrayList<>();
         data.alertas = new ArrayList<>();
 
@@ -73,6 +85,22 @@ public class ToonPersistenceService {
             double area = Double.parseDouble(extractValue(loteBlock, "AREA"));
 
             Lote lote = new Lote(id, nombre, cultivo, area);
+
+            // Parsear nuevos campos agrícolas
+            String fechaSiembraStr = extractValue(loteBlock, "FECHA_SIEMBRA");
+            if (!fechaSiembraStr.isEmpty()) {
+                lote.setFechaSiembra(LocalDate.parse(fechaSiembraStr));
+            }
+
+            String etapa = extractValue(loteBlock, "ETAPA");
+            if (!etapa.isEmpty()) {
+                lote.setEtapaCrecimiento(etapa);
+            }
+
+            String notas = extractValue(loteBlock, "NOTAS");
+            if (!notas.isEmpty()) {
+                lote.setNotas(notas);
+            }
 
             // Parse Sensors within Lote
             Pattern sensorPattern = Pattern.compile("SENSOR \\{(.*?)\\}", Pattern.DOTALL);
@@ -125,5 +153,11 @@ public class ToonPersistenceService {
             return m.group(1).trim();
         }
         return "";
+    }
+
+    // Data container class
+    public static class AgroSenseData {
+        public List<Lote> lotes;
+        public List<Alerta> alertas;
     }
 }
